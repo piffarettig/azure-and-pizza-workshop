@@ -84,7 +84,7 @@ atendiendo solicitudes
 Si tu aplicación está corriendo sobre el puerto 12345, entonces tu ```bot url``` quedaría algo así:  ```http://localhost:12345/api/messages```
 
 
-![alt tag](https://github.com/piffarettig/azure-and-pizza-workshop/blob/develop/Workshop-images/5.png)
+![alt tag](https://github.com/piffarettig/azure-and-pizza-workshop/blob/develop/Workshop-images/5.jpg)
 
 6) Probamos nuestro bot a través del emulador y vemos lo qué sucede. ¿Qué hay detrás de cada mensaje que enviamos y recibimos mediante el bot?
 
