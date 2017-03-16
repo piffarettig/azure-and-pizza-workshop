@@ -38,3 +38,4 @@ c:\users\gabrielmac\documents\visual studio 2015\Projects\AzureAndPizzaWorkshop\
 c:\users\gabrielmac\documents\visual studio 2015\Projects\AzureAndPizzaWorkshop\AzureAndPizzaWorkshop\obj\Debug\Bot Application1.dll
 c:\users\gabrielmac\documents\visual studio 2015\Projects\AzureAndPizzaWorkshop\AzureAndPizzaWorkshop\obj\Debug\Bot Application1.pdb
 c:\users\gabrielmac\documents\visual studio 2015\Projects\AzureAndPizzaWorkshop\AzureAndPizzaWorkshop\bin\Microsoft.Cognitive.LUIS.dll
+c:\users\gabrielmac\documents\visual studio 2015\Projects\AzureAndPizzaWorkshop\AzureAndPizzaWorkshop\bin\Microsoft.ProjectOxford.Vision.dll
