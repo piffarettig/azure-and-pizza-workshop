@@ -426,6 +426,32 @@
           "endPos": 3
         }
       ]
+    },
+    {
+      "text": "prender termostato a 9 grados",
+      "intent": "turn_thermostat",
+      "entities": [
+        {
+          "entity": "Temperature",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "encender el termostato",
+      "intent": "turn_thermostat",
+      "entities": []
+    },
+    {
+      "text": "apagar el termostato",
+      "intent": "turn_thermostat",
+      "entities": []
+    },
+    {
+      "text": "prender el termostato",
+      "intent": "turn_thermostat",
+      "entities": []
     }
   ]
 }
