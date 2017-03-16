@@ -10,8 +10,8 @@ El objetivo de este workshop es mostrar algunas de las capacidades existentes de
 
 Aquí se adjuntan las slides dadas en el evento que funcionan como introducción y marco teórico de los conceptos a poner en práctica:
 
-- SLIDE COGNITIVE
-- SLIDE BOT FR
+- Slides de Cognitive Services (Pendientes)
+- Slides de Bot Framework ()
 
 ## Pre-Workshop
 
@@ -315,4 +315,157 @@ Y ahora agregamos lógica simple sobre el manejo de los datos dentro de las resu
       await context.PostAsync(message);
       context.Wait(MessageReceived);
   }
+ ```
+
+ ## Workshop - Parte 4: Reconocimiento de imagenes
+ 
+ 
+1) En primer lugar agregamos la referencia a la key API de Prueba de Computer Vision que vamos a usar. Lo correcto sería usar una propia, pero a fines de simplificar el alcance del workshop se decide usar una de prueba. Para ello en el archivo ```web.config``` de nuestro proyecto, dentro del bloque delimitado por el tag ```<appsettings>```, agregamos la siguiente línea:
+ 
+ <add key="MicrosoftVisionApiKey" value="c84d0e1aaaff482b9014a570927bdbf2" />
+ 
+ 2) En segundo lugar lo que haremos será agregar la referencia a la librería que nos provee la funcionalidad de acceder a la Computer Vision API. La misma se llama ```Microsoft.ProjectOxford.Vision```. 
+ 
+ 3) Agregaremos tres clases que definen la lógica de utilizar el reconocimiento de imagenes:
+ 
+ Interfaz ```ICaptionService```
+ 
+ ```C#
+ 
+using System.IO;
+  using System.Threading.Tasks;
+
+  internal interface ICaptionService
+  {
+      Task<string> GetCaptionAsync(Stream stream);
+      Task<string> GetCaptionAsync(string url);
+  }
+
+```
+
+Clase ``` MicrosoftCognitiveCaptionService```
+
+```C#
+public class MicrosoftCognitiveCaptionService : ICaptionService
+{
+
+    private static readonly string ApiKey = WebConfigurationManager.AppSettings["MicrosoftVisionApiKey"];
+
+    private static readonly VisualFeature[] VisualFeatures = { VisualFeature.Description };
+
+    public async Task<string> GetCaptionAsync(string url)
+    {
+        var client = new VisionServiceClient(ApiKey);
+        var result = await client.AnalyzeImageAsync(url, VisualFeatures);
+        return ProcessAnalysisResult(result);
+    }
+
+    public async Task<string> GetCaptionAsync(Stream stream)
+    {
+        var client = new VisionServiceClient(ApiKey);
+        var result = await client.AnalyzeImageAsync(stream, VisualFeatures);
+        return ProcessAnalysisResult(result);
+    }
+
+    private static string ProcessAnalysisResult(AnalysisResult result)
+    {
+        string message = result?.Description?.Captions.FirstOrDefault()?.Text;
+
+        return string.IsNullOrEmpty(message) ?
+                    "No se como describir esta imagen! " :
+                    "Creo que es '" + message + "'";
+    }
+}
+```
+
+ Clase ```ImageCaptionUtils```
+ 
+```C#
+
+public class ImageCaptionUtils
+{
+    private static readonly ICaptionService captionService = new MicrosoftCognitiveCaptionService();
+
+    private static async Task<Stream> GetImageStream(ConnectorClient connector, Attachment imageAttachment)
+    {
+        using (var httpClient = new HttpClient())
+        {
+            // The Skype attachment URLs are secured by JwtToken,
+            // you should set the JwtToken of your bot as the authorization header for the GET request your bot initiates to fetch the image.
+            // https://github.com/Microsoft/BotBuilder/issues/662
+            var uri = new Uri(imageAttachment.ContentUrl);
+            if (uri.Host.EndsWith("skype.com") && uri.Scheme == "https")
+            {
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync(connector));
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/octet-stream"));
+            }
+
+            return await httpClient.GetStreamAsync(uri);
+        }
+    }
+
+    private static bool TryParseAnchorTag(string text, out string url)
+    {
+        var regex = new Regex("^<a href=\"(?<href>[^\"]*)\">[^<]*</a>$", RegexOptions.IgnoreCase);
+        url = regex.Matches(text).OfType<Match>().Select(m => m.Groups["href"].Value).FirstOrDefault();
+        return url != null;
+    }
+
+    private static async Task<string> GetTokenAsync(ConnectorClient connector)
+    {
+        var credentials = connector.Credentials as MicrosoftAppCredentials;
+        if (credentials != null)
+        {
+            return await credentials.GetTokenAsync();
+        }
+
+        return null;
+    }
+
+    public static async Task<string> GetCaptionAsync(Activity activity, ConnectorClient connector)
+    {
+        var imageAttachment = activity.Attachments?.FirstOrDefault(a => a.ContentType.Contains("image"));
+        if (imageAttachment != null)
+        {
+            using (var stream = await GetImageStream(connector, imageAttachment))
+            {
+                return await captionService.GetCaptionAsync(stream);
+            }
+        }
+
+        string url;
+        if (TryParseAnchorTag(activity.Text, out url))
+        {
+            return await captionService.GetCaptionAsync(url);
+        }
+
+        if (Uri.IsWellFormedUriString(activity.Text, UriKind.Absolute))
+        {
+            return await captionService.GetCaptionAsync(activity.Text);
+        }
+
+        throw new ArgumentException("El mensaje no tiene una imagen! :(");
+    }
+}
+
+```
+
+4) Y finalmente, reemplazamos el código dentro del Post en MessagesController por:
+
+```C#
+  try
+  {
+      var connector = new ConnectorClient(new Uri(activity.ServiceUrl));
+      string message = await ImageCaptionUtils.GetCaptionAsync(activity, connector);
+      Activity reply = activity.CreateReply(message);
+      await connector.Conversations.ReplyToActivityAsync(reply);
+      // await Conversation.SendAsync(activity, () => new RootDialog());
+  }
+  catch (Exception e)
+  {
+      ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
+      Activity reply = activity.CreateReply($"Error ocurrido: {e.Message}");
+      await connector.Conversations.ReplyToActivityAsync(reply);
+  }
+                
  ```
