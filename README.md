@@ -37,14 +37,15 @@ En este workshop construiremos un bot que está pensado para personas no vidente
 
 IMAGEN 1
 
+![alt tag](https://github.com/piffarettig/azure-and-pizza-workshop/blob/develop/Workshop-images/1.png)
+
 2) Abrimos el Visual Studio y creamos una nueva 'Bot Application', con el nombre y ubicación de destino que queramos.
 
-IMAGEN 2
-
+https://github.com/piffarettig/azure-and-pizza-workshop/blob/develop/Workshop-images/2.png
 3) Observar y entender el template y la estructura del proyecto creado. 
 
 
-IMAGEN 3
+https://github.com/piffarettig/azure-and-pizza-workshop/blob/develop/Workshop-images/3.png
 
 ¿A qué nos recuerda?
 
@@ -76,18 +77,18 @@ Examinar el siguiente fragmento de código:
 4) Compilar y ejecutar el proyecto, donde se abrirá una ventana del explorador indicando el puerto en el que nuestro bot está
 atendiendo solicitudes
 
-IMAGEN 4
+https://github.com/piffarettig/azure-and-pizza-workshop/blob/develop/Workshop-images/4.png
 
 5) Abrimos el Bot Framework Emulator que deberíamos haber descargado previamente, y colocamos la ```Bot url```; es decir el endpoint en el que nuestro bot va a estar esperando recibir los mensajes por parte de los clientes.
 
 Si tu aplicación está corriendo sobre el puerto 12345, entonces tu ```bot url``` quedaría algo así:  ```http://localhost:12345/api/messages```
 
 
-IMAGEN 5
+https://github.com/piffarettig/azure-and-pizza-workshop/blob/develop/Workshop-images/5.png
 
 6) Probamos nuestro bot a través del emulador y vemos lo qué sucede. ¿Qué hay detrás de cada mensaje que enviamos y recibimos mediante el bot?
 
-IMAGEN 6
+https://github.com/piffarettig/azure-and-pizza-workshop/blob/develop/Workshop-images/6.png
 
 ## Workshop - Parte 2: Reconocimiento de Lenguaje Natural
 
@@ -95,7 +96,7 @@ Para esta parte utilizaremos la herramienta LUIS para que nuestro bot pueda ente
 
 1) Lo primero que haremos será registrar nuestro modelo de LUIS en el portal brindado por Azure para acceder a dicha funcionalidad. Para ello debemos ingresar a [(luis.ai)](https://www.luis.ai/home/index/) e iniciar sesión con una cuenta de Microsoft (Ay elegir ```Import App```. De esa forma elegimos el archivo .json que existe en este repositorio y desde el cual importaremos este modelo.
 
-IMAGEN 7
+https://github.com/piffarettig/azure-and-pizza-workshop/blob/develop/Workshop-images/7.png
 
 Lo importante a ver aquí es que este modelo fue entrenado por quienes dictan el workshop para ahorrar el tiempo de entrenamiento del mismo. De todas formas, el modelo deberá ser mejorado y reentrenado para resolver ciertos casos que veremos en el workshop.
 
@@ -103,26 +104,26 @@ Lo importante a ver aquí es que este modelo fue entrenado por quienes dictan el
 2) La idea ahora es entender cómo funciona este modelo, cómo se lo entrena, cómo se definen entidades e intenciones.
 
 
-IMAGEN 8
+https://github.com/piffarettig/azure-and-pizza-workshop/blob/develop/Workshop-images/8.png
 
 3) Ahora publicamos nuestro modelo yendo a la opción ```Publish App```, para ahí elegir la Comprar de crear una Key de Cognitive Services en Azure ```Build Key```. 
 
 
-IMAGEN 9
+https://github.com/piffarettig/azure-and-pizza-workshop/blob/develop/Workshop-images/9.png
 
 
 Para ello nos loggeamos en nuestra cuenta de Azure y agregamos un nuevo recurso del tipo 'Cognitive Services API'. Lo configuramos para que sea del tipo ```Language Understanding Intelligence Service (LUIS)```.
 
-IMAGEN 10
+https://github.com/piffarettig/azure-and-pizza-workshop/blob/develop/Workshop-images/10.png
 
 Finalmente nos quedamos con su Key que el valor que vamos a usar en LUIS.
 
-IMAGEN 11
+https://github.com/piffarettig/azure-and-pizza-workshop/blob/develop/Workshop-images/11.png
 
 
 Volvemos a LUIS y agregamos los datos de la Key generada, pudiendo ahora sí publicar nuestra aplicación 
 
-IMAGEN 12
+https://github.com/piffarettig/azure-and-pizza-workshop/blob/develop/Workshop-images/12.png
 
 
 4) Ahora agregaremos la lógica creada en LUIS a nuestro bot. Para ello crearemos una nueva clase llamada RootDialog que será quien modelará la interacción con el usuario. El código de la misma se deja en las líneas siguientes. Nota: es importante decorar el nombre de la clase con el ```modelID``` y el ```subscriptionID``` correspondientes a su modelo de LUIS.
